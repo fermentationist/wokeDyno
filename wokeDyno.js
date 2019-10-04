@@ -5,8 +5,8 @@ const fetch = require("node-fetch");
 const wakeUpDyno = ({
     url, 
     interval = 25, 
-    start = [22,0,0,1], 
-    end = [23,59,59,999], 
+    startNap = [22,0,0,1], 
+    endNap = [23,59,59,999], 
     callback
 }) => {
     const milliseconds = interval * 60000;
@@ -14,7 +14,7 @@ const wakeUpDyno = ({
         setTimeout(() => {
             try { 
                 console.log(`setTimeout called.`);
-                if (nowIsBetween(start, end)){// fetch only during allowed hours
+                if (! isNaptime(startNap, endNap)){// fetch only during allowed hours
                     fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke.`)); // HTTP GET request to the dyno's url
                 }
             }
@@ -30,7 +30,7 @@ const wakeUpDyno = ({
                     callback ? console.log("Callback failed: ", e.message) : null;
                 }
                 finally {
-                    return wakeUpDyno(url, interval, start, end, callback);// do it all again
+                    return wakeUpDyno(url, interval, startNap, endNap, callback);// do it all again
                 }
                 
             }
@@ -42,17 +42,19 @@ const wakeUpDyno = ({
 };
 
 /*
-Returns true if current time falls between begin and end. begin and end are arrays of numbers representing the time. They follow this pattern: [Hours, Minutes, Seconds, Milliseconds]. If end time is less than begin time, end will be assumed to be on the following day. */
-const nowIsBetween = (beginTime, endTime) => { 
+If current time falls between startTime and endTime, returns length startTime and endTime are arrays of numbers representing the time of day. They follow this pattern: [Hours, Minutes, Seconds, Milliseconds]. If endTime is less than startTime time, endTime will be assumed to be on the following day. 
+
+If current time is not between startTime and endTime, will return false */
+const isNaptime = (startTime, endTime) => { 
     const now = new Date(Date.now());
     const todayArray = [
         now.getFullYear(),
         now.getMonth(),
         now.getDate()
     ];
-    const begin = new Date(Date.UTC(...todayArray, ...beginTime));
+    const start = new Date(Date.UTC(...todayArray, ...startTime));
     const end = new Date(Date.UTC(...todayArray, ...endTime));
-    const finish = begin < end ? end : end.setDate(end.getDate() + 1);
+    const finish = start < end ? end : end.setDate(end.getDate() + 1);
 
     //     let finish = start <= end[i] ? end[i] : end[i] + 24;// to account 
     return now >= start && now <= finish;
@@ -62,4 +64,4 @@ module.exports = wakeUpDyno;
 
 // wakeUpDyno("https://dennis-hodges.com", 0.125, [11,0,0,0], [5,0,0,0]);
 wakeUpDyno({url:"https://google.com", interval: 0.125});
-// console.log(nowIsBetween([5,0,0,0], [11,0,0,0]))
+// console.log(isDormant([5,0,0,0], [11,0,0,0]))
