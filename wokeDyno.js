@@ -3,50 +3,23 @@
 const fetch = require("node-fetch");
 
 const wakeUpDyno = ({
-    url, 
-    interval = 1.5e6, 
-    startNap = [22,0,0,1], 
-    endNap = [23,59,59,999], 
-    callback
+    url,
+    interval,
+    startNap,
+    endNap
 }) => {
-    const minutes = (interval / 60000).toFixed(3);
-    console.log("TCL: minutes", minutes)
-    try {
-        const currentTimer = setTimeout(() => {
-            try { 
-                const naptime = timeToNap(startNap, endNap);
-                if (naptime){// fetch only during allowed hours
-                    console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
-                    currentTimer.refresh();
-                    // clearTimeout(currentTimer);
-                    return wakeUpDyno({url, interval: naptime, startNap, endNap, callback});
-                }
-                fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${minutes} minutes...`)); // HTTP GET request to the dyno's url
-            }
-            catch (err) { // catch fetch errors
-                console.log(`Error fetching ${url}: ${err.message} \nWill try again in ${minutes} minutes...`);
-            }
-            finally {
-
-                try {
-                    callback(); // execute callback, if passed
-                }
-                catch (e) { // catch callback error
-                    callback ? console.log("Callback failed: ", e.message) : null;
-                }
-                finally {
-                    currentTimer.refresh();
-                    return wakeUpDyno({url, interval, startNap, endNap, callback});// do it all again
-                }
-                
-            }
-        }, interval);
+    const timeoutFn = () => {
+        const naptime = timeToNap(startNap, endNap);
+        if (naptime){
+            console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
+        }
+        if (!naptime){
+            fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${(interval / 60000).toFixed(2)} minutes...`));
+        }
+        return wakeUpDyno({url, interval, startNap, endNap})
     }
-    catch(error){
-        console.log(`Error executing setTimeout: ${err.message}`);
-    }
-};
-
+    const timeoutId = setTimeout(timeoutFn, interval);
+}
 /*
 If current time falls between startTime and endTime, returns length startTime and endTime are arrays of numbers representing the time of day. They follow this pattern: [Hours, Minutes, Seconds, Milliseconds]. If endTime is less than startTime time, endTime will be assumed to be on the following day. 
 
@@ -70,4 +43,4 @@ const timeToNap = (startTime, endTime) => {
 module.exports = wakeUpDyno;
 
 
-wakeUpDyno({url:"https://google.com", interval: 20000, startNap: [4,52,0,0], endNap: [4,54,0,666]});
+wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [1,42,0,0], endNap: [1,44,0,666]});
