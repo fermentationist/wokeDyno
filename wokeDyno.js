@@ -9,17 +9,25 @@ const wakeUpDyno = ({
     endNap = [10,0,0,0], 
     callback
 }) => {
+    const minutes = (interval / 60000).toFixed(2);
+    const minuteString = `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+    console.log(`wokeDyno interval: ${minuteString}`);
     const runTimer = timerInterval => {
         const timeoutFn = () => {
             clearTimeout(timeoutId);
             timerInterval = interval;// reset to original interval, after nap
             const naptime = timeToNap(startNap, endNap); // if nap, will return length of nap in ms
             if (naptime){
-                console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
+                const napString = `${(naptime / 60000).toFixed(2)} ${Math.floor(minutes) > 1 ? "minutes" : "minute"}`;
+                console.log(`It's naptime! Napping for ${napString}...`);
                 return runTimer(naptime); // take a nap
             }
-            fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${(timerInterval / 60000).toFixed(2)} minutes...`));
+            fetch(url)
+            .then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${minuteString}...`))
+            .catch(error => console.log(`Error fetching ${url}: ${error.message}`));
+
             return runTimer(timerInterval); // run timer with original interval
+            
         }
         const timeoutId = setTimeout(timeoutFn, timerInterval);
     }
@@ -27,7 +35,7 @@ const wakeUpDyno = ({
         runTimer(interval);
     }
     catch (error){
-        console.log("Error:", error.message);
+        console.log("setTimeout error:", error.message);
     }
 }
 /*
@@ -45,6 +53,7 @@ const timeToNap = (startTime, endTime) => {
     const end = new Date(Date.UTC(...todayArray, ...endTime));
     const finish = start < end ? end : end.setDate(end.getDate() + 1);
     if (now >= start && now <= finish){
+        
         return finish - now;
     }
     return false;
@@ -53,6 +62,6 @@ const timeToNap = (startTime, endTime) => {
 module.exports = wakeUpDyno;
 
 
-// wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [7,34,0,0], endNap: [7,38,0,666]});
+wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [16,1,40,0], endNap: [16,25,0,666]});
 
-wakeUpDyno({url: "https://dennis-hodges.com", interval: 10000});
+// wakeUpDyno({url: "https://dennis-hodges.com", interval: 60000});
