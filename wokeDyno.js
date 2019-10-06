@@ -3,22 +3,32 @@
 const fetch = require("node-fetch");
 
 const wakeUpDyno = ({
-    url,
-    interval,
-    startNap,
-    endNap
+    url, 
+    interval = 1.5e6, 
+    startNap = [22,0,0,1], 
+    endNap = [23,59,59,999], 
+    callback
 }) => {
-    const timeoutFn = () => {
-        const naptime = timeToNap(startNap, endNap);
-        if (naptime){
-            console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
+    const runTimer = timerInterval => {
+        const timeoutFn = () => {
+            clearTimeout(timeoutId);
+            timerInterval = interval;
+            const naptime = timeToNap(startNap, endNap);
+            if (naptime){
+                console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
+                return runTimer(naptime);
+            }
+            fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${(timerInterval / 60000).toFixed(2)} minutes...`));
+            return runTimer(timerInterval)
         }
-        if (!naptime){
-            fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${(interval / 60000).toFixed(2)} minutes...`));
-        }
-        return wakeUpDyno({url, interval, startNap, endNap})
+        const timeoutId = setTimeout(timeoutFn, timerInterval);
     }
-    const timeoutId = setTimeout(timeoutFn, interval);
+    try {
+        runTimer(interval);
+    }
+    catch (error){
+        console.log("Error:", error.message);
+    }
 }
 /*
 If current time falls between startTime and endTime, returns length startTime and endTime are arrays of numbers representing the time of day. They follow this pattern: [Hours, Minutes, Seconds, Milliseconds]. If endTime is less than startTime time, endTime will be assumed to be on the following day. 
@@ -43,4 +53,4 @@ const timeToNap = (startTime, endTime) => {
 module.exports = wakeUpDyno;
 
 
-wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [1,42,0,0], endNap: [1,44,0,666]});
+wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [7,34,0,0], endNap: [7,38,0,666]});
