@@ -5,21 +5,21 @@ const fetch = require("node-fetch");
 const wakeUpDyno = ({
     url, 
     interval = 1.5e6, 
-    startNap = [22,0,0,1], 
-    endNap = [23,59,59,999], 
+    startNap = [5,0,0,0], 
+    endNap = [10,0,0,0], 
     callback
 }) => {
     const runTimer = timerInterval => {
         const timeoutFn = () => {
             clearTimeout(timeoutId);
-            timerInterval = interval;
-            const naptime = timeToNap(startNap, endNap);
+            timerInterval = interval;// reset to original interval, after nap
+            const naptime = timeToNap(startNap, endNap); // if nap, will return length of nap in ms
             if (naptime){
                 console.log(`It's naptime! Napping for ${(naptime / 60000).toFixed(2)} minutes...`, naptime);
-                return runTimer(naptime);
+                return runTimer(naptime); // take a nap
             }
             fetch(url).then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${(timerInterval / 60000).toFixed(2)} minutes...`));
-            return runTimer(timerInterval)
+            return runTimer(timerInterval); // run timer with original interval
         }
         const timeoutId = setTimeout(timeoutFn, timerInterval);
     }
@@ -53,4 +53,6 @@ const timeToNap = (startTime, endTime) => {
 module.exports = wakeUpDyno;
 
 
-wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [7,34,0,0], endNap: [7,38,0,666]});
+// wakeUpDyno({url:"https://google.com", interval: 7000, startNap: [7,34,0,0], endNap: [7,38,0,666]});
+
+wakeUpDyno({url: "https://dennis-hodges.com", interval: 10000});
