@@ -2,16 +2,13 @@
   "name": "woke-dyno",
   "version": "0.0.1",
   "description": "wokedyno keeps your free Heroku dyno from sleeping.",
-  "main": "index.js",
+  "main": "wokeDyno.js",
   "scripts": {
     "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "event-emitter": "^0.3.5",
-    "handled": "^1.2.2",
-    "moment": "^2.24.0",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
