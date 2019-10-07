@@ -1,5 +1,5 @@
 {
-  "name": "wokedyno",
+  "name": "woke-dyno",
   "version": "0.0.1",
   "description": "wokedyno keeps your free Heroku dyno from sleeping.",
   "main": "index.js",
@@ -16,5 +16,14 @@
   },
   "devDependencies": {
     "jest": "^24.9.0"
-  }
+  },
+  "keywords": [
+    "woke-dyno",
+    "wokedyno",
+    "heroku",
+    "dyno",
+    "wake dyno",
+    "sleep",
+    "sleeping"
+  ]
 }
