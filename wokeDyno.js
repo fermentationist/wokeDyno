@@ -46,5 +46,3 @@ const wokeDyno = ({
 }
 
 module.exports = wokeDyno;
-
-wokeDyno({url: "https://dennis-hodges.com", interval: 6000}).start()
