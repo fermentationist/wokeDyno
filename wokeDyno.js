@@ -3,12 +3,16 @@
 const fetch = require("node-fetch");
 const timeToNap = require("./naptime.js");
 
-const wokeDyno = ({
-    url, 
-    interval = 1.5e6, 
-    startNap = [5,0,0,0], 
-    endNap = [10,0,0,0]
-}) => {
+const wokeDyno = (options) => {
+    let url;
+    if (typeof options === "string") {
+        url = options;
+    } else {
+        url = options.url;
+    }
+    let interval = options.interval || 3000//1.5e6;
+    let startNap = options.startNap || [0, 0, 0, 0];
+    let endNap = options.endNap || [0, 0, 0, 1];
     const minutes = (interval / 60000).toFixed(2);
     const minuteString = `${minutes} ${(interval / 60000) === 1 ? "minute" : "minutes"}`;
     console.log(`wokeDyno called with an interval of ${minuteString}.`);
