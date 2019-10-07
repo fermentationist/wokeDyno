@@ -3,21 +3,19 @@
 const fetch = require("node-fetch");
 const timeToNap = require("./naptime.js");
 
-const wakeUpDyno = ({
+const wokeDyno = ({
     url, 
     interval = 1.5e6, 
     startNap = [5,0,0,0], 
     endNap = [10,0,0,0]
 }) => {
-    const now = new Date(Date.now());
     const minutes = (interval / 60000).toFixed(2);
     const minuteString = `${minutes} ${(interval / 60000) === 1 ? "minute" : "minutes"}`;
-    console.log(`wokeDyno interval: ${minuteString}`);
-    const runTimer = timerInterval => {
+    console.log(`wokeDyno called with an interval of ${minuteString}.`);
+    const runTimer = (timerInterval) => {
         const timeoutFn = () => {
-            clearTimeout(timeoutId);
             timerInterval = interval;// reset to original interval, after nap
-            const naptime = timeToNap(startNap, endNap, now); // if nap, will return length of nap in ms
+            const naptime = timeToNap(startNap, endNap, new Date(Date.now())); // if nap, will return length of nap in ms
             if (naptime){
                 const napString = `${(naptime / 60000).toFixed(2)} ${Math.floor(minutes) > 1 ? "minutes" : "minute"}`;
                 console.log(`It's naptime! Napping for ${napString}...`);
@@ -26,18 +24,27 @@ const wakeUpDyno = ({
             fetch(url)
             .then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${minuteString}...`))
             .catch(error => console.log(`Error fetching ${url}: ${error.message}`));
-
+            clearTimeout(timeoutId);
             return runTimer(timerInterval); // run timer with original interval
             
         }
         const timeoutId = setTimeout(timeoutFn, timerInterval);
+        return timeoutId;
     }
-    try {
-        runTimer(interval);
+    const start = () => {
+        try {
+            return runTimer(interval);
+        }
+        catch (error){
+            console.log("setTimeout error:", error.message);
+        }
     }
-    catch (error){
-        console.log("setTimeout error:", error.message);
+    return {
+        start,
+        runTimer
     }
 }
 
-module.exports = wakeUpDyno;
+module.exports = wokeDyno;
+
+wokeDyno({url: "https://dennis-hodges.com", interval: 6000}).start()

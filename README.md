@@ -1,6 +1,6 @@
 # woke-dyno
 
-**woke-dyno** is a tiny utility to prevent your Heroku dyno (server) from sleeping when not in use. 
+**woke-dyno** is a tiny utility to prevent your Heroku dyno (virtual machine instance) from sleeping when not in use. 
 
 According to [**herokuapp.com**, `If an app has a free web dyno, and that dyno receives no web traffic in a 30-minute period, it will sleep.`](https://devcenter.heroku.com/articles/free-dyno-hours) When a user loads a sleeping heroku app, it may take an uncomfortably long time (up to ten seconds!) for the dyno to spin up and serve the page. This is long enough for many users to assume the site is broken and move on. 
 
@@ -29,44 +29,12 @@ const wakeDyno = require("woke-dyno");
 // create an Express app
 const app = express();
 
-// start the server, then run wokeDyno
+// start the server, then call wokeDyno(url).start()
 app.listen(PORT, () => {
-    wakeDyno(DYNO_URL); // DYNO_URL should be the url of your Heroku app
+    wakeDyno(DYNO_URL).start(); // DYNO_URL should be the url of your Heroku app
 });
 
 ```
-
-The function will return a `Promise`, so you can use `then` to chain additional functions, if you wish.
-
-```node
-app.listen(PORT, () => {
-    wakeDyno(DYNO_URL).then(() => console.log("This happens next."));
-});
-
-```
-
----
-## Options
-A list of the icon names accepted by the component can be found in the [Devicons cheatsheet](http://vorillaz.github.io/devicons/#/cheat), or can be returned as an array by using the package's `iconList` export. **woke-dyno** also exports the `RandomIcon` component to display a randomly chosen icon.
-
-```js
-import DevIcon, {iconList, RandomIcon} from "woke-dyno";
-
-console.log(`Here is a list of icon names used by this component: ${iconList}`);
-
-const Demo = props => {
-    return (<RandomIcon />);
-}
-```
-
----
-## Credits
-
-**woke-dyno** was made by Dennis Hodges, a Javascript developer.
-
-Thank you to [Theodore Vorillas](https://www.vorillaz.com/), who created the font and icon collection that this component is based on, and which is the source of all of the svg path data used in this package.
-
-You can find his original icon repository here: [Devicons](https://github.com/vorillaz/devicons).
 
 ---
 ## License
