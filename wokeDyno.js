@@ -10,7 +10,7 @@ const wokeDyno = (options) => {
     } else {
         url = options.url;
     }
-    let interval = options.interval || 3000//1.5e6;
+    let interval = options.interval || 1.5e6;
     let startNap = options.startNap || [0, 0, 0, 0];
     let endNap = options.endNap || [0, 0, 0, 1];
     const minutes = (interval / 60000).toFixed(2);
