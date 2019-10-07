@@ -4,7 +4,7 @@
   "description": "wokedyno keeps your free Heroku dyno from sleeping.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,8 @@
     "handled": "^1.2.2",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0"
   }
 }
