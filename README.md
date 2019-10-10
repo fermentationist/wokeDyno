@@ -10,11 +10,11 @@ According to [**herokuapp.com:** `If an app has a free web dyno, and that dyno r
 ## Installation
 To install with **npm**:
 ```bash
-npm install --save "woke-dyno"
+npm install --save woke-dyno
 ```
 To install with **Yarn**:
 ```bash
-yarn add "woke-dyno"
+yarn add woke-dyno
 ```
 ---
 ## Use
