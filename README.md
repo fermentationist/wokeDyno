@@ -2,7 +2,7 @@
 
 **woke-dyno** is a tiny utility to prevent your Heroku dyno (server) from sleeping when not in use. 
 
-According to [**herokuapp.com:** `If an app has a free web dyno, and that dyno receives no web traffic in a 30-minute period, it will sleep.`](https://devcenter.heroku.com/articles/free-dyno-hours) When a user loads a sleeping heroku app, it may take an uncomfortably long time (up to ten seconds!) for the dyno to spin up and serve the page. This is long enough for many users to assume the site is broken and move on. 
+Apps hosted on a free Heroku dyno, will ["sleep"](https://devcenter.heroku.com/articles/free-dyno-hours) if they do not receive any web traffic for thirty minutes. When a user loads a sleeping Heroku app, it may take an uncomfortably long time (up to ten seconds!) for the dyno to spin up and serve the page. This is long enough for many users to assume the site is broken and move on. 
 
 **woke-dyno** will perform a simple HTTP request to whatever url you provide, at regular intervals. If you use the url of your free dyno, that single GET request will be sufficient to prevent it from going dormant, so that visitors will not be made to endure unreasonably long loading times.
 
@@ -10,17 +10,17 @@ According to [**herokuapp.com:** `If an app has a free web dyno, and that dyno r
 ## Installation
 To install with **npm**:
 ```bash
-npm install --save "woke-dyno"
+npm install --save woke-dyno
 ```
 To install with **Yarn**:
 ```bash
-yarn add "woke-dyno"
+yarn add woke-dyno
 ```
 ---
 ## Use
 Import the default export from **woke-dyno** (a function) and invoke it after starting up your server, passing the url of your dyno as an argument. To start **woke-dyno**, call its `.start()` method:
 
-```node
+```javascript
 /* Example: as used with an Express app */
 
 const express = require("express")
@@ -40,7 +40,7 @@ app.listen(PORT, () => {
 
 By default, **woke-dyno** will make its HTTP request once every 25 minutes, with no naptime.  By passing an options object, instead of a string, you can change the default settings:
 
-```node
+```javascript
 /* Example: with custom options */
 
 app.listen(PORT, () => {

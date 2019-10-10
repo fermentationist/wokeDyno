@@ -1,6 +1,6 @@
 {
   "name": "woke-dyno",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "wokedyno keeps your free Heroku dyno from sleeping.",
   "main": "wokeDyno.js",
   "scripts": {
