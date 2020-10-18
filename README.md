@@ -36,7 +36,7 @@ app.listen(PORT, () => {
 
 ```
 ---
-##Options
+## Options
 
 By default, **woke-dyno** will make its HTTP request once every 25 minutes, with no naptime.  By passing an options object, instead of a string, you can change the default settings:
 
