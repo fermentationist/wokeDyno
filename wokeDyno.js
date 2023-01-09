@@ -5,6 +5,7 @@ const timeToNap = require("./naptime.js");
 
 const wokeDyno = (options) => {
     let url;
+    let thisTimeoutId;
     if (typeof options === "string") {
         url = options;
     } else {
@@ -20,6 +21,7 @@ const wokeDyno = (options) => {
         const timeoutFn = () => {
             timerInterval = interval;// reset to original interval, after nap
             const naptime = timeToNap(startNap, endNap, new Date(Date.now())); // if nap, will return length of nap in ms
+            console.log("naptime:", naptime)
             if (naptime){
                 const napString = `${(naptime / 60000).toFixed(2)} ${Math.floor(minutes) > 1 ? "minutes" : "minute"}`;
                 console.log(`It's naptime! Napping for ${napString}...`);
@@ -28,24 +30,39 @@ const wokeDyno = (options) => {
             fetch(url)
             .then(() => console.log(`Fetching ${url}. Dyno is woke. \nNext fetch request in ${minuteString}...`))
             .catch(error => console.log(`Error fetching ${url}: ${error.message}`));
-            clearTimeout(timeoutId);
+            clearTimeout(thisTimeoutId);
             return runTimer(timerInterval); // run timer with original interval
             
         }
-        const timeoutId = setTimeout(timeoutFn, timerInterval);
-        return timeoutId;
+        thisTimeoutId = setTimeout(timeoutFn, timerInterval);
+        return thisTimeoutId;
     }
-    const start = () => {
+    // const start = () => {
+    //     try {
+    //         return runTimer(interval);
+    //     }
+    //     catch (error){
+    //         console.log("setTimeout error:", error.message);
+    //     }
+    // }
+
+    const start = () => new Promise((resolve, reject) => {
         try {
-            return runTimer(interval);
+            thisTimeoutId = runTimer(interval);
+            return resolve(thisTimeoutId);
         }
-        catch (error){
-            console.log("setTimeout error:", error.message);
+        catch (error) {
+            console.error("wokeDyno error:", error);
+            return reject(error);
         }
+    });
+
+    const stop = () => {
+        clearTimeout(thisTimeoutId);
     }
     return {
         start,
-        runTimer
+        stop
     }
 }
 
