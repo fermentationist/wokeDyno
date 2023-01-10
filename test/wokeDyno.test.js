@@ -38,11 +38,11 @@ describe("*** Timing tests - wokeDyno ***", () => {
     expect(fetch).toHaveBeenCalledWith(URL);
   };
 
-test("Calls fetch and setTimeout once per interval when not napping, until stop() is called.", async () => {
+test("Calls fetch and setTimeout once per interval when not napping, until stop() is called.", () => {
     const randomInterval = randomInt(0, 1.5e6);
     const numIntervals = randomInt(10, 100);
     const wakeUpDyno = wokeDyno({ url: URL, interval: randomInterval });
-    await wakeUpDyno.start();
+    wakeUpDyno.start();
     jest.advanceTimersByTime(randomInterval * numIntervals);
     testWakeUpDyno(numIntervals);
     jest.advanceTimersByTime(randomInterval * numIntervals);
@@ -52,7 +52,7 @@ test("Calls fetch and setTimeout once per interval when not napping, until stop(
     testWakeUpDyno(numIntervals * 2); // fetch and setTimeout will not have been called any additional times, despite advancing timers, because it is stopped.
   });
 
-  test("Calls setTimeout once and fetch zero times while napping.", async () => {
+  test("Calls setTimeout once and fetch zero times while napping.", () => {
     const interval = 45000;
 		const now = new Date();
 		const hours = now.getUTCHours();
@@ -67,7 +67,7 @@ test("Calls fetch and setTimeout once per interval when not napping, until stop(
       startNap,
       endNap,
     });
-    await wakeUpDyno.start();
+    wakeUpDyno.start();
     expect(setTimeout).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(45 * 1000); // after interval, but before nap is over
 		expect(setTimeout).toHaveBeenCalledTimes(2);
@@ -93,7 +93,7 @@ test("Calls fetch and setTimeout once per interval when not napping, until stop(
       startNap,
       endNap,
     });
-    await wakeUpDyno.start();
+    wakeUpDyno.start();
     expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     await sleep(250); // before interval is over
 		expect(setTimeoutSpy).toHaveBeenCalledTimes(2); // "sleep" helper function calls setTimeout once each time it is invoked
@@ -126,7 +126,7 @@ test("Calls fetch and setTimeout once per interval when not napping, until stop(
       startNap,
       endNap,
     });
-    await wakeUpDyno.start();
+    wakeUpDyno.start();
     expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     await sleep(250); // before interval is over
 		expect(setTimeoutSpy).toHaveBeenCalledTimes(2); // "sleep" helper function calls setTimeout once each time it is invoked
