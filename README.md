@@ -24,15 +24,17 @@ Import the default export from **woke-dyno** (a function) and invoke it with the
 import express from "express";
 import wokeDyno from "woke-dyno";
 
-const PORT = 9999;
-const DYNO_URL = "https://hotdogisasandwich.com"; // the URL of the app to keep awake
+const SELF_URL = "https://hotdogisasandwich.com"; // the URL of the server to keep awake
 
 // create an Express app
 const app = express();
 
-const dynoWaker = wokeDyno(DYNO_URL);
+...
 
-// start the server, then call wokeDyno(url).start()
+// configure wokeDyno
+const dynoWaker = wokeDyno(SELF_URL);
+
+// start the server, then start wokeDyno
 app.listen(PORT, () => {
     dynoWaker.start();
 });
@@ -45,23 +47,29 @@ By default, **woke-dyno** will make its HTTP request once every 14 minutes, with
 
 ```javascript
 /* Example: with custom options */
+
+...
+
+// configure wokeDyno
 const dynoWaker = wokeDyno({
-  url: DYNO_URL,  // url string
-  interval: 60000, // interval in milliseconds (1 minute in this example)
+  url: SELF_URL,  // url string
+  interval: 1000 * 60 * 20, // interval in milliseconds (20 minutes in this example)
   startNap: [5, 0, 0, 0], // the time to start nap in UTC, as [h, m, s, ms] (05:00 UTC in this example)
   endNap: [9, 59, 59, 999] // time to wake up again, in UTC (09:59:59.999 in this example)
 });
 
+// start the server, then start wokeDyno
 app.listen(PORT, () => {
   dynoWaker.start(); 
 });
 ```
+
 * **`url`** (String): The URL of the server to wake
 * **`interval`** (Number): The interval to wait between fetch requests, in milliseconds
 * **`startNap`** (Number[]): An array of four numbers, representing the time to begin "napping" ([h, m, s, ms])
 * **`endNap`** (Number[]): An array of four numbers, representing the time to stop "napping" and resume fetch requests ([h, m, s, ms])
 
-Because services like these limit your [free server time](https://render.com/docs/free), you may want to use the `startNap` and `endNap` parameters to let your server sleep during times that it is unlikely to be used. The start and end times are entered as arrays in the format: [hours, minutes, seconds, milliseconds], and are in Coordinated Universal Time (UTC).
+Because free hosting providers usually limit your [free server time](https://render.com/docs/free), you may want to use the `startNap` and `endNap` parameters to let your server sleep during times that it is unlikely to be used. The start and end times are entered as arrays in the format: [hours, minutes, seconds, milliseconds], and are in Coordinated Universal Time (UTC).
 
 
 ---
@@ -80,7 +88,7 @@ Upon invoking the default export from **woke-dyno** with your chosen options, yo
 ---
 ## License
 
-#### Copyright © 2022 Dennis Hodges
+#### Copyright © 2019 Dennis Hodges
 
 
 __The MIT License__
