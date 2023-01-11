@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const timeToNap = require("./naptime.js");
 
 const DEFAULTS = {
-  URL: "https://www.stackoverflow.com",
+  URL: "https://stackoverflow.com",
   INTERVAL: 1000 * 60 * 14,
   START_NAP: [0, 0, 0, 0],
   END_NAP: [0, 0, 0, 1] // default nap lasts one millisecond
@@ -12,11 +12,11 @@ const DEFAULTS = {
 
 const wokeDyno = (options) => {
   let thisTimeoutId;
-  if (typeof options === "string") {
+  if (typeof options === "string" || !options) {
     options = {url: options};
   }
   let {url, interval, startNap, endNap} = options;
-  url = typeof url === "string" ? url : DEFAULTS.URL;
+  url = url || DEFAULTS.URL;
   interval = typeof interval === "number" ? interval : DEFAULTS.INTERVAL;
   startNap = Array.isArray(startNap) && startNap.length === 4 ? startNap : DEFAULTS.START_NAP;
   endNap = Array.isArray(endNap) && endNap.length === 4 ? endNap : DEFAULTS.END_NAP;
