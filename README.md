@@ -1,10 +1,8 @@
 # woke-dyno
 
-**woke-dyno** is a tiny utility to prevent your Heroku dyno (server) from sleeping when not in use. 
+There are some hosting services like Render.com that will allow you to host a server for free, but with some limitations. If it does not receive any web traffic for a set period of time, your free server will be put to sleep, leaving the next user to visit with a possibly long wait time (up to thirty seconds!) as your server starts up again. This is long enough for many users to assume the site is broken and move on. **woke-dyno** is a tiny utility to prevent your server from sleeping when not in use. 
 
-Apps hosted on a free Heroku dyno, will ["sleep"](https://devcenter.heroku.com/articles/free-dyno-hours) if they do not receive any web traffic for thirty minutes. When a user loads a sleeping Heroku app, it may take an uncomfortably long time (up to ten seconds!) for the dyno to spin up and serve the page. This is long enough for many users to assume the site is broken and move on. 
-
-**woke-dyno** will perform a simple HTTP request to whatever url you provide, at regular intervals. If you use the url of your free dyno, that single GET request will be sufficient to prevent it from going dormant, so that visitors will not be made to endure unreasonably long loading times.
+**woke-dyno** will perform a simple HTTP request to whatever url you provide, at regular intervals. If you use the url of your free server, that single GET request will be sufficient to prevent it from going dormant, so that visitors will not be made to endure unreasonably long loading times.
 
 ---
 ## Installation
@@ -18,46 +16,74 @@ yarn add woke-dyno
 ```
 ---
 ## Use
-Import the default export from **woke-dyno** (a function) and invoke it after starting up your server, passing the url of your dyno as an argument. To start **woke-dyno**, call its `.start()` method:
+Import the default export from **woke-dyno** (a function) and invoke it with the url of your server as an argument. Call the `.start()` method on the returned object to start **woke-dyno**:
 
 ```javascript
 /* Example: as used with an Express app */
 
-const express = require("express")
-const wakeDyno = require("woke-dyno");
+import express from "express";
+import wokeDyno from "woke-dyno";
+
+const SELF_URL = "https://hotdogisasandwich.com"; // the URL of the server to keep awake
 
 // create an Express app
 const app = express();
 
-// start the server, then call wokeDyno(url).start()
+...
+
+// configure wokeDyno
+const dynoWaker = wokeDyno(SELF_URL);
+
+// start the server, then start wokeDyno
 app.listen(PORT, () => {
-    wakeDyno(DYNO_URL).start(); // DYNO_URL should be the url of your Heroku app
+    dynoWaker.start();
 });
 
 ```
 ---
 ## Options
 
-By default, **woke-dyno** will make its HTTP request once every 25 minutes, with no naptime.  By passing an options object, instead of a string, you can change the default settings:
+By default, **woke-dyno** will make its HTTP request once every 14 minutes, with no naptime.  By passing an options object, instead of a string, you can change the default settings:
 
 ```javascript
 /* Example: with custom options */
 
+...
+
+// configure wokeDyno
+const dynoWaker = wokeDyno({
+  url: SELF_URL,  // url string
+  interval: 1000 * 60 * 20, // interval in milliseconds (20 minutes in this example)
+  startNap: [5, 0, 0, 0], // the time to start nap in UTC, as [h, m, s, ms] (05:00 UTC in this example)
+  endNap: [9, 59, 59, 999] // time to wake up again, in UTC (09:59:59.999 in this example)
+});
+
+// start the server, then start wokeDyno
 app.listen(PORT, () => {
-    wakeDyno({
-        url: DYNO_URL,  // url string
-        interval: 60000, // interval in milliseconds (1 minute in this example)
-        startNap: [5, 0, 0, 0], // the time to start nap in UTC, as [h, m, s, ms] (05:00 UTC in this example)
-        endNap: [9, 59, 59, 999] // time to wake up again, in UTC (09:59:59.999 in this example)
-    }).start(); 
+  dynoWaker.start(); 
 });
 ```
-Because Heroku limits your [free dyno hours](https://devcenter.heroku.com/articles/free-dyno-hours), you may want to use the `startNap` and `endNap` parameters to let your dyno sleep during times that it is unlikely to be used. The start and end times are entered as arrays in the format: [hours, minutes, seconds, milliseconds], and are in Coordinated Universal Time (UTC).
+
+* **`url`** (String): The URL of the server to wake
+* **`interval`** (Number): The interval to wait between fetch requests, in milliseconds
+* **`startNap`** (Number[]): An array of four numbers, representing the time to begin "napping" ([h, m, s, ms])
+* **`endNap`** (Number[]): An array of four numbers, representing the time to stop "napping" and resume fetch requests ([h, m, s, ms])
+
+Because free hosting providers usually limit your [free server time](https://render.com/docs/free), you may want to use the `startNap` and `endNap` parameters to let your server sleep during times that it is unlikely to be used. The start and end times are entered as arrays in the format: [hours, minutes, seconds, milliseconds], and are in Coordinated Universal Time (UTC).
+
+
+---
+## Methods
+
+Upon invoking the default export from **woke-dyno** with your chosen options, you will be returned an object with two methods:
+
+* **`start()`**: Starts **woke-dyno**, using the configured options
+* **`stop()`**: Clears the current timer, stopping **woke-dyno**
 
 ---
 ## Credits
 
-**woke-dyno** was made by [Dennis Hodges](https://github.com/fermentationist), a Javascript developer.
+**woke-dyno** was made by [Dennis Hodges](https://github.com/fermentationist), a JavaScript developer.
 
 ---
 ## License

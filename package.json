@@ -1,18 +1,21 @@
 {
   "name": "woke-dyno",
-  "version": "0.0.4",
-  "description": "wokedyno keeps your free Heroku dyno from sleeping.",
+  "version": "1.0.0",
+  "description": "woke-dyno is a tiny utility to prevent your server from sleeping when not in use",
   "main": "wokeDyno.js",
   "scripts": {
     "test": "jest"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Dennis Hodges",
+    "email": "fermentationist@gmail.com"
+  },
+  "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^29.3.1"
   },
   "keywords": [
     "woke-dyno",
@@ -21,6 +24,7 @@
     "dyno",
     "wake dyno",
     "sleep",
-    "sleeping"
+    "sleeping",
+    "wake server"
   ]
 }
