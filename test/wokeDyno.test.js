@@ -7,7 +7,7 @@ const URL = "https://www.stackoverflow.com";
 */
 
 //utility functions
-const randomInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
+const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 //mocks
