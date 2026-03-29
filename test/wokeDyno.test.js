@@ -1,9 +1,10 @@
-const wokeDyno = require("../wokeDyno.js");
+import wokeDyno from "../wokeDyno.js";
+import { vi, describe, test, beforeEach, afterEach, afterAll, expect } from 'vitest';
 
 const URL = "https://www.stackoverflow.com";
 
 /*
-  Not updating Jest because newer versions don't allow same ability to spy on setTimeout while using fake timers
+  Not updating Vitest because newer versions don't allow same ability to spy on setTimeout while using fake timers
 */
 
 //utility functions
@@ -11,25 +12,24 @@ const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + mi
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 //mocks
-jest.mock("node-fetch");
-const fetch = require("node-fetch");
-fetch.mockImplementation(() => Promise.resolve()); // mock node-fetch
+vi.stubGlobal('fetch', vi.fn(() => Promise.resolve()));
+const fetch = global.fetch;
 
 let timeoutSpy;
 
 beforeEach(() => {
-  jest.useFakeTimers();
-  timeoutSpy = jest.spyOn(global, "setTimeout");
+  vi.useFakeTimers();
+  timeoutSpy = vi.spyOn(global, "setTimeout");
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
-  jest.clearAllTimers();
+  vi.clearAllMocks();
+  vi.clearAllTimers();
 });
 
 afterAll(() => {
-  fetch.mockRestore();
-  jest.useRealTimers();
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 describe("*** Timing tests - wokeDyno ***", () => {
@@ -48,7 +48,7 @@ describe("*** Timing tests - wokeDyno ***", () => {
     const defaultUrl = "https://stackoverflow.com";
     const wakeUpDyno = wokeDyno();
     wakeUpDyno.start();
-    jest.advanceTimersByTime(defaultInterval * numIntervals);
+    vi.advanceTimersByTime(defaultInterval * numIntervals);
     expect(setTimeout).toHaveBeenCalledTimes(numIntervals + 1);
     expect(fetch).toHaveBeenCalledTimes(numIntervals);
     expect(fetch).toHaveBeenCalledWith(defaultUrl);
@@ -60,12 +60,12 @@ describe("*** Timing tests - wokeDyno ***", () => {
     const numIntervals = randomInt(10, 100);
     const wakeUpDyno = wokeDyno({ url: URL, interval: randomInterval });
     wakeUpDyno.start();
-    jest.advanceTimersByTime(randomInterval * numIntervals);
+    vi.advanceTimersByTime(randomInterval * numIntervals);
     testWakeUpDyno(numIntervals);
-    jest.advanceTimersByTime(randomInterval * numIntervals);
+    vi.advanceTimersByTime(randomInterval * numIntervals);
     testWakeUpDyno(numIntervals * 2);
     wakeUpDyno.stop();
-    jest.advanceTimersByTime(randomInterval * numIntervals);
+    vi.advanceTimersByTime(randomInterval * numIntervals);
     testWakeUpDyno(numIntervals * 2); // fetch and setTimeout will not have been called any additional times, despite advancing timers, because it is stopped.
   });
 
@@ -86,10 +86,10 @@ describe("*** Timing tests - wokeDyno ***", () => {
     });
     wakeUpDyno.start();
     expect(setTimeout).toHaveBeenCalledTimes(1);
-    jest.advanceTimersByTime(45 * 1000); // after interval, but before nap is over
+    vi.advanceTimersByTime(45 * 1000); // after interval, but before nap is over
 		expect(setTimeout).toHaveBeenCalledTimes(2);
 		expect(fetch).toHaveBeenCalledTimes(0);
-    jest.advanceTimersByTime(15 * 1000); // after nap
+    vi.advanceTimersByTime(15 * 1000); // after nap
     expect(setTimeout).toHaveBeenCalledTimes(3);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveReturnedTimes(1);
@@ -113,27 +113,27 @@ describe("*** Timing tests - wokeDyno ***", () => {
       endNap,
     });
     wakeUpDyno.start();
-    jest.advanceTimersByTime(1000 * 60 * 40); // before interval is over
+    vi.advanceTimersByTime(1000 * 60 * 40); // before interval is over
     expect(setTimeout).toHaveBeenCalledTimes(1);
 		expect(fetch).toHaveBeenCalledTimes(0);
 
-    jest.advanceTimersByTime(1000 * 60 * 5); // after interval, but before nap is over
+    vi.advanceTimersByTime(1000 * 60 * 5); // after interval, but before nap is over
 		expect(setTimeout).toHaveBeenCalledTimes(2);
 		expect(fetch).toHaveBeenCalledTimes(0);
 
-    jest.advanceTimersByTime(1000 * 60 * 15); // after nap
+    vi.advanceTimersByTime(1000 * 60 * 15); // after nap
     expect(setTimeout).toHaveBeenCalledTimes(3);
     expect(fetch).toHaveBeenCalledTimes(1);
 
-    jest.advanceTimersByTime(1000 * 60 * 60); // nap begins again
+    vi.advanceTimersByTime(1000 * 60 * 60); // nap begins again
     expect(setTimeout).toHaveBeenCalledTimes(4);
     expect(fetch).toHaveBeenCalledTimes(2);
 
-    jest.advanceTimersByTime(1000 * 60 * 30); // next interval
+    vi.advanceTimersByTime(1000 * 60 * 30); // next interval
     expect(setTimeout).toHaveBeenCalledTimes(5);
     expect(fetch).toHaveBeenCalledTimes(2); 
 
-    jest.advanceTimersByTime(1000 * 60 * 60 * 22.5); // next interval, end of nap
+    vi.advanceTimersByTime(1000 * 60 * 60 * 22.5); // next interval, end of nap
     expect(setTimeout).toHaveBeenCalledTimes(6);
     expect(fetch).toHaveBeenCalledTimes(3);
     expect(fetch).toHaveReturnedTimes(3);

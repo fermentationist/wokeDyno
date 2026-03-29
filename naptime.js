@@ -25,4 +25,4 @@ const timeToNap = (startTime, endTime, currentTimestamp) => {
   return 0;
 };
 
-module.exports = timeToNap;
+export default timeToNap;

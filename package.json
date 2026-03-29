@@ -1,26 +1,22 @@
 {
   "name": "woke-dyno",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "type": "module",
   "description": "woke-dyno is a tiny utility to prevent your server from sleeping when not in use",
   "main": "wokeDyno.js",
   "scripts": {
-    "test": "jest"
+    "test": "vitest"
   },
   "author": {
     "name": "Dennis Hodges",
     "email": "fermentationist@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-    "node-fetch": "^2.6.0"
-  },
-  "devDependencies": {
-    "jest": "^29.3.1"
-  },
   "keywords": [
     "woke-dyno",
     "wokedyno",
     "heroku",
+    "render.com",
     "dyno",
     "wake dyno",
     "sleep",

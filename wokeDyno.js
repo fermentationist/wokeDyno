@@ -1,11 +1,10 @@
-// This script will run every 20 minutes to keep a heroku dyno awake and running, thereby eliminating potentially very long wait time as sleeping server restarts
-// Import into main file and invoke right after starting up server, passing in the heroku url
-const fetch = require("node-fetch");
-const timeToNap = require("./naptime.js");
+// This script will run every 20 minutes to keep a server awake and running, thereby eliminating potentially very long wait time as sleeping server restarts
+// Import into main file and invoke right after starting up server, passing in the server url
+import timeToNap from "./naptime.js";
 
 const DEFAULTS = {
   URL: "https://stackoverflow.com",
-  INTERVAL: 1000 * 60 * 14,
+  INTERVAL: 1000 * 60 * 14, // default interval is 14 minutes
   START_NAP: [0, 0, 0, 0],
   END_NAP: [0, 0, 0, 1] // default nap lasts one millisecond
 }
@@ -65,4 +64,4 @@ const wokeDyno = (options) => {
   };
 };
 
-module.exports = wokeDyno;
+export default wokeDyno;

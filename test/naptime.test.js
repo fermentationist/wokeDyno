@@ -1,4 +1,5 @@
-const timeToNap = require("../naptime.js");
+import timeToNap from "../naptime.js";
+import { describe, test, expect } from 'vitest';
 
 describe("*** naptime.js ***", () => {
 	
