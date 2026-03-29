@@ -1,25 +1,28 @@
-// This script will run every 20 minutes to keep a heroku dyno awake and running, thereby eliminating potentially very long wait time as sleeping server restarts
-// Import into main file and invoke right after starting up server, passing in the heroku url
-const fetch = require("node-fetch");
-const timeToNap = require("./naptime.js");
+// This script will run every 20 minutes to keep a server awake and running, thereby eliminating potentially very long wait time as sleeping server restarts
+// Import into main file and invoke right after starting up server, passing in the server url
+import timeToNap from "./naptime.js";
 
 const DEFAULTS = {
   URL: "https://stackoverflow.com",
-  INTERVAL: 1000 * 60 * 14,
+  INTERVAL: 1000 * 60 * 14, // default interval is 14 minutes
   START_NAP: [0, 0, 0, 0],
-  END_NAP: [0, 0, 0, 1] // default nap lasts one millisecond
-}
+  END_NAP: [0, 0, 0, 1], // default nap lasts one millisecond
+};
 
 const wokeDyno = (options) => {
   let thisTimeoutId;
   if (typeof options === "string" || !options) {
-    options = {url: options};
+    options = { url: options };
   }
-  let {url, interval, startNap, endNap} = options;
+  let { url, interval, startNap, endNap } = options;
   url = url || DEFAULTS.URL;
   interval = typeof interval === "number" ? interval : DEFAULTS.INTERVAL;
-  startNap = Array.isArray(startNap) && startNap.length === 4 ? startNap : DEFAULTS.START_NAP;
-  endNap = Array.isArray(endNap) && endNap.length === 4 ? endNap : DEFAULTS.END_NAP;
+  startNap =
+    Array.isArray(startNap) && startNap.length === 4
+      ? startNap
+      : DEFAULTS.START_NAP;
+  endNap =
+    Array.isArray(endNap) && endNap.length === 4 ? endNap : DEFAULTS.END_NAP;
   const minutes = (interval / 60000).toFixed(2);
   const minuteString = `${minutes} ${
     interval / 60000 === 1 ? "minute" : "minutes"
@@ -39,7 +42,7 @@ const wokeDyno = (options) => {
       fetch(url)
         .then(() => {
           console.log(
-            `Fetching ${url}. \nNext fetch request in ${minuteString}...`
+            `Fetching ${url}. \nNext fetch request in ${minuteString}...`,
           );
         })
         .catch((error) => {
@@ -65,4 +68,4 @@ const wokeDyno = (options) => {
   };
 };
 
-module.exports = wokeDyno;
+export default wokeDyno;
