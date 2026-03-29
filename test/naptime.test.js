@@ -1,8 +1,7 @@
 import timeToNap from "../naptime.js";
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect } from "vitest";
 
 describe("*** naptime.js ***", () => {
-	
   test("It returns 0 if currentTimestamp arg is not between startTime and endTime.", () => {
     const now = new Date();
     const hours = now.getUTCHours();

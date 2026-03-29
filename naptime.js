@@ -16,7 +16,7 @@ const timeToNap = (startTime, endTime, currentTimestamp) => {
     } else if (currentTimestamp > startStamp) {
       const tomorrowArray = [year, month, date + 1];
       endStamp = Date.UTC(...tomorrowArray, ...endTime);
-    } 
+    }
     return endStamp - currentTimestamp;
   }
   if (currentTimestamp >= startStamp && currentTimestamp <= endStamp) {
